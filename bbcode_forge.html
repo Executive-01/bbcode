@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BBCode Generator</title>
+<style>
+:root{--bg:#050d18;--panel:#0a1728;--panel2:#0d1d31;--line:#183452;--blue:#45b9ff;--blue2:#1687d9;--text:#e9f4ff;--muted:#8fa9c3;--danger:#ff6b7a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0%,#12395c55,transparent 35%),radial-gradient(circle at 90% 90%,#006bb533,transparent 30%),var(--bg);color:var(--text);font:14px/1.5 Inter,system-ui,sans-serif;min-height:100vh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 35%,#39b8ff08 50%,transparent 65%)}
+.app{display:flex;min-height:100vh}.side{width:260px;padding:24px 16px;border-right:1px solid var(--line);background:#06111fee;backdrop-filter:blur(16px);position:sticky;top:0;height:100vh}
+.logo{display:flex;gap:12px;align-items:center;padding:8px 10px 25px}.logo i{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--blue),#1268bd);box-shadow:0 0 28px #35b8ff33}.logo b{font-size:17px}.logo small{display:block;color:var(--muted);font-size:11px}
+.nav button{width:100%;text-align:left;border:0;background:transparent;color:var(--muted);padding:12px;border-radius:10px;margin:3px 0;cursor:pointer}.nav button:hover,.nav button.active{background:#12314d;color:white}.nav span{margin-right:9px}.soon{font-size:10px;border:1px solid #34536c;border-radius:20px;padding:2px 6px;float:right}
+.main{flex:1;padding:28px;max-width:1450px;margin:auto;width:100%}.top{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:22px}.top h1{margin:0;font-size:27px}.top p{margin:4px 0;color:var(--muted)}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}.card{background:linear-gradient(145deg,#0b1b2ddd,#081321dd);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 12px 45px #0004}.card h2{font-size:16px;margin:0 0 15px}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field.full{grid-column:1/-1}label{display:block;color:#a9c0d7;font-size:12px;margin-bottom:6px}input,select,textarea{width:100%;background:#061321;border:1px solid #1b3a58;color:white;border-radius:9px;padding:10px 11px;outline:none}textarea{min-height:82px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #45b9ff12}
+.actions{display:flex;gap:9px;margin-top:15px}.btn{border:0;border-radius:9px;padding:10px 15px;cursor:pointer;font-weight:700}.primary{background:linear-gradient(135deg,#39b5ff,#147bd0);color:white}.secondary{background:#11263b;color:#cde6fa;border:1px solid #20425f}
+pre{margin:0;white-space:pre-wrap;word-break:break-word;background:#030a12;border:1px solid #17314b;border-radius:10px;padding:15px;min-height:500px;max-height:75vh;overflow:auto;color:#bfe5ff;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}.preview{grid-column:1/-1}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.badge{font-size:11px;color:#73caff;background:#0c2b44;padding:5px 8px;border-radius:20px}
+.dynamic{margin-top:15px;padding-top:15px;border-top:1px solid var(--line)}.row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px}.row4{grid-template-columns:1fr 1fr 1fr auto}.remove{background:#2a1720;color:#ff9aa5;border:1px solid #4b2530;border-radius:8px}.check{display:flex;align-items:center;gap:8px;padding:8px;background:#071625;border:1px solid #17314b;border-radius:8px}.check input{width:auto}.mobileMenu{display:none}
+@media(max-width:900px){.side{width:215px}.grid{grid-template-columns:1fr}.preview{grid-column:auto}}
+@media(max-width:700px){.app{display:block}.side{position:fixed;z-index:20;width:100%;height:auto;display:none;border-right:0;border-bottom:1px solid var(--line)}.side.open{display:block}.mobileMenu{display:block;position:fixed;right:14px;top:14px;z-index:30}.main{padding:18px 12px;padding-top:64px}.fields{grid-template-columns:1fr}.field.full{grid-column:auto}.row,.row4{grid-template-columns:1fr}.top h1{font-size:22px}.card{padding:14px}pre{min-height:380px}}
+.hidden{display:none}.muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<button class="btn primary mobileMenu" onclick="document.querySelector('.side').classList.toggle('open')">☰</button>
+<div class="app">
+<aside class="side">
+<div class="logo"><i></i><div><b>BBCode Forge</b><small>Police State Utilities</small></div></div>
+<div class="nav">
+<button class="active" data-page="cgc">▣ &nbsp; CGC Generator</button>
+<button data-page="license">▤ &nbsp; License Generator</button>
+<button data-page="event">◈ &nbsp; Event Permit</button>
+</div>
+</aside>
+<main class="main">
+<div class="top"><div><h1 id="title">CGC Generator</h1><p id="desc">Generate clean, forum-ready BBCode in seconds.</p></div></div>
+<section id="cgc" class="page">
+<div class="grid"><div class="card"><h2>Personal Information</h2><div class="fields" id="cgcFields"></div><div class="actions"><button class="btn primary" onclick="generateCGC()">Generate BBCode</button><button class="btn secondary" onclick="resetPage('cgc')">Reset</button></div></div><div class="card preview"><div class="toolbar"><h2>Generated BBCode</h2><span class="badge">CGC</span></div><pre id="cgcOut">Isi form lalu tekan Generate BBCode.</pre><div class="actions"><button class="btn primary" onclick="copyOut('cgcOut')">Copy BBCode</button></div></div></div>
+</section>
+<section id="license" class="page hidden">
+<div class="card"><h2>License Generator</h2><div class="fields"><div class="field"><label>License Type</label><select id="licType"><option value="lorry">Lorry Truck</option><option value="heavy">Heavy Truck</option><option disabled>Firearms — Coming Soon</option></select></div></div><div id="licenseFields" class="dynamic"></div><div class="actions"><button class="btn primary" onclick="generateLicense()">Generate BBCode</button><button class="btn secondary" onclick="resetPage('license')">Reset</button></div></div>
+<div class="card" style="margin-top:18px"><div class="toolbar"><h2>Generated BBCode</h2><span class="badge">LICENSE</span></div><pre id="licOut">Isi form lalu tekan Generate BBCode.</pre><div class="actions"><button class="btn primary" onclick="copyOut('licOut')">Copy BBCode</button></div></div>
+</section>
+<section id="event" class="page hidden">
+<div class="card"><h2>Event Permit</h2><p class="muted">Gambar, rundown, dan photocopy ID dapat ditambah sebanyak yang diperlukan atau dikosongkan. <b>Web ini tidak mengupload file ke Upload.ee.</b> Upload gambar/file secara manual ke Upload.ee, lalu tempel <i>direct image URL</i> di kolom URL. Jika URL tidak menampilkan gambar, sistem akan memberi peringatan.</p><div id="eventFields"></div><div class="actions"><button class="btn primary" onclick="generateEvent()">Generate BBCode</button><button class="btn secondary" onclick="resetPage('event')">Reset</button></div></div>
+<div class="card" style="margin-top:18px"><div class="toolbar"><h2>Generated BBCode</h2><span class="badge">EVENT PERMIT</span></div><pre id="eventOut">Isi form lalu tekan Generate BBCode.</pre><div class="actions"><button class="btn primary" onclick="copyOut('eventOut')">Copy BBCode</button></div></div>
+</section>
+</main></div>
+<script>
+const $=id=>document.getElementById(id), val=id=>$(id)?.value.trim()||'';
+function field(id,label,type='text',extra=''){return `<div class="field ${extra}"><label>${label}</label><input id="${id}" type="${type}" placeholder="${label}"></div>`}
+$('cgcFields').innerHTML=field('c_name','Full Name')+field('c_dob','Date of Birth')+field('c_pob','Place of Birth')+field('c_gender','Gender')+field('c_address','Current Address','text','full')+field('c_phone','Phone Number')+field('c_nat','Nationality')+field('c_occ','Occupation')+field('c_purpose','Purpose','text','full');
+
+function generateCGC(){
+const d={name:val('c_name'),dob:val('c_dob'),pob:val('c_pob'),gender:val('c_gender'),address:val('c_address'),phone:val('c_phone'),nat:val('c_nat'),occ:val('c_occ'),purpose:val('c_purpose')};
+$('cgcOut').textContent=`[divbox=white][align=center][img]https://i.imgur.com/ZGWFDMR.png[/img] 
+[/align] 
+[divbox=#012849][color=white][align=center]PERSONAL INFORMATION[/align][/color][/divbox] 
+
+[list] [*] [b]Full Name:[/b] ${d.name}
+[*] [b]Date of Birth :[/b] ${d.dob}
+[*] [b]Place of Birth :[/b] ${d.pob}
+[*] [b]Gender :[/b] ${d.gender}
+[*] [b]Current Address :[/b] ${d.address}
+[*] [b]Phone Number :[/b] ${d.phone}
+[*] [b]Nationality :[/b] ${d.nat}
+[*] [b]Occupation :[/b] ${d.occ}
+[/list] 
+
+[divbox=#012849][color=white][align=center]ADDITIONAL INFORMATION[/align][/color][/divbox] 
+
+[list] [*] [b]Purpose:[/b] ${d.purpose}
+[/list] 
+
+[divbox=#012849][color=white][align=center]TERMS AND AGREEMENTS[/align][/color][/divbox] 
+
+[i]This Certificate has been requested to Police Department. All the data above will be saved permanently in our Administrative Service Offices. This certificate will show all of your databases and records during your living in San Andreas, including last charges.[/i][hr][/hr] 
+
+[hr][/hr] 
+[align=center]${d.name}[/align] 
+[hr][/hr] 
+
+[hr][/hr] 
+[align=right] 
+Commanding Officer of Detective Bureau 
+Commander Eugene Niel[/align] 
+[hr][/hr] 
+[divbox=#f1f1f1][divbox=#20354C][color=white][align=center]LICENSE APPLICATION DECLARATION [/align][/color][/divbox] 
+[list=none][b]Deklarasi:[/b] 
+[quote]Saya, ${d.name}, sudah membaca halaman [url=https://police-state.site/viewtopic.php?t=6]GCLU Hours[/url] dengan benar dan tahu pada jam berapa saja saya harus datang.  
+Saya, ${d.name} juga setuju bahwa jika saya [b]MASIH[/b] menggunakan [i]555 / 911[/i] untuk menanyakan sesuatu yang sudah tertera di GCLU Hours, saya akan menerima konsekuensi, yaitu [b]form saya ditolak secara langsung[/b].[/list][/quote] 
+
+[list=none][b]Declaration:[/b] 
+[quote]I, ${d.name}, have read and understood the [url=https://police-state.site/viewtopic.php?t=6]GCLU Hours[/url] page and know at what time should I come. 
+I, ${d.name}, have agreed that my form will be [b]DENIED immediately[/b] should I still ask about something that has already been informed over the GCLU Hours, over the 555/911 hotline.[/list][/quote] 
+
+Los Santos, ${d.dob}
+[u]${d.name}[/u][/divbox]`;
+}
+function licenseUI(){ $('licenseFields').innerHTML=field('l_name','Full Name')+field('l_gender','Gender')+field('l_dob','Date of Birth')+field('l_address','Address','text','full')+field('l_phone','Phone Number')+field('l_img','License Image URL','text','full');}
+licenseUI();
+function generateLicense(){
+const t=$('licType').value,d={name:val('l_name'),gender:val('l_gender'),dob:val('l_dob'),address:val('l_address'),phone:val('l_phone'),img:val('l_img')};
+$('licOut').textContent=`[divbox=white][align=center][img]https://i.imgur.com/ZGWFDMR.png[/img] 
+[/align] 
+[divbox=grey][color=white][align=center]PERSONAL INFORMATION[/align][/color][/divbox] 
+[list=none] 
+[b]1.[/b] FULL NAME [b]:[/b] 
+[list=none]${d.name}[/list] 
+[b]2.[/b] GENDER [b]:[/b] 
+[list=none]${d.gender}[/list] 
+[b]3.[/b] DATE OF BIRTH [b]:[/b] 
+[list=none]${d.dob}[/list] 
+[b]4.[/b] ADDRESS [b]:[/b] 
+[list=none]${d.address}[/list] 
+[b]5.[/b] PHONE NUMBER [b]:[/b] 
+[list=none]${d.phone}[/list] 
+[b]6.[/b] LICENSES [b]:[/b] 
+[list=none][img]${d.img}[/img][size=1][color=transparant][/color][/size][/list] 
+[/list] 
+
+[divbox=grey][color=white][align=center]TERMS AND AGREEMENT[/align][/color][/divbox] 
+[quote]I hereby declare that I will follow and obey all the rules stated inside Trucking License Information and Regulations and inside SAPD Penal Code. If I caught violating or opposing the rules, I'm willing to get my license revoked, my truck impounded, fined, and/or jailed.[/quote] 
+
+Los Santos, ${d.dob} 
+
+[i]${d.name}[/i][/divbox] 
+[divbox=white][divbox=grey][color=white][align=center]LICENSE APPLICATION DECLARATION [size=1][color=transparant][/align][/color][/size][/color][/divbox] 
+[list=none][b]Deklarasi:[/b] 
+[quote]Saya, ${d.name}, sudah membaca halaman [url=https://police-state.site/viewtopic.php?t=6]GCLU Hours[/url] dengan benar dan tahu pada jam berapa saja saya harus datang.  
+Saya, ${d.name} juga setuju bahwa jika saya [b]MASIH[/b] menggunakan [i]666 / 911[/i] untuk menanyakan sesuatu yang sudah tertera di GCLU Hours, saya akan menerima konsekuensi, yaitu [b]form saya ditolak secara langsung[/b].[/list][/quote] 
+
+[list=none][b]Declaration:[/b] 
+[quote]I, ${d.name}, have read and understood the [url=https://police-state.site/viewtopic.php?t=6]GCLU Hours[/url] page and know at what time should I come. 
+I, ${d.name}, have agreed that my form will be [b]DENIED immediately[/b] should I still ask about something that has already been informed over GCLU Hours, over the 666/911 hotline.[/list][/quote] 
+
+Los Santos, ${d.dob}
+[u]${d.name}[/u][/divbox]`;
+}
+function imageRows(containerId,prefix,label){let c=$(containerId); c.innerHTML=`<label>${label}</label><div id="${prefix}rows"></div><button type="button" class="btn secondary" onclick="addImage('${prefix}')">+ Add Image</button>`;addImage(prefix)}
+function addImage(prefix){let r=$(prefix+'rows'),n=r.children.length;let x=document.createElement('div');x.className='row';x.innerHTML=`<input id="${prefix}${n}" placeholder="Direct image URL dari Upload.ee (opsional)" type="url"><button class="btn remove" onclick="this.parentElement.remove()">Remove</button>`;r.appendChild(x)}
+function images(prefix){return [...$(prefix+'rows').querySelectorAll('input')].map(x=>x.value.trim()).filter(Boolean)}
+function eventInput(id,label,full=false){return `<div class="field ${full?'full':''}"><label>${label}</label><input id="${id}" placeholder="${label}"></div>`}
+function eventArea(id,label){return `<div class="field full"><label>${label}</label><textarea id="${id}" placeholder="${label}"></textarea></div>`}
+function renderEvent(){
+$('eventFields').innerHTML=`<div class="card" style="padding:14px;margin-bottom:12px"><h2>Section 1 — Information Details</h2><div class="fields">
+${eventInput('e_app','Applicant Signature')}${eventInput('e_name','Name')}${eventInput('e_date','Date')}${eventInput('e_start','Start Time')}${eventInput('e_end','End Time')}${eventInput('e_class','Classification (Small/Big)')}${eventInput('e_type','Type (Indoor/Outdoor/Mix)')}${eventInput('e_location','Location')}${eventInput('e_ltype','Location Type')}${eventInput('e_part','Participants')}${eventInput('e_walk','Walkie Talkie Channel for Public')}</div></div>
+<div class="card" style="padding:14px;margin-bottom:12px"><h2>Section 2 — Purpose and Objectives</h2>${eventArea('e_purpose','Purpose / Objectives')}</div>
+<div class="card" style="padding:14px;margin-bottom:12px"><h2>Section 3 — Company Informations</h2><div class="fields">${eventInput('co_name','Company Name')}${eventInput('co_address','Address')}${eventInput('co_email','E-mail')}${eventInput('co_phone','Fax or Phone Number')}</div></div>
+<div class="card" style="padding:14px;margin-bottom:12px"><h2>Section 4 — Head of Committee</h2><div id="headRows"></div><button class="btn secondary" onclick="addHead()">+ Add Head</button></div>
+<div class="card" style="padding:14px;margin-bottom:12px"><h2>Section 5 — Members</h2><div id="memberRows"></div><button class="btn secondary" onclick="addMember()">+ Add Member</button></div>
+<div class="card" style="padding:14px;margin-bottom:12px"><h2>Section 6 — Rundown</h2><div id="runRows"></div><button class="btn secondary" onclick="addRun()">+ Add Rundown</button><div style="margin-top:10px">${eventArea('e_note','Note')}</div></div>
+<div class="card" style="padding:14px;margin-bottom:12px"><h2>Section 7 — Location Mapping</h2><div id="mapRows"></div><button class="btn secondary" onclick="addImage('map')">+ Add Image</button></div>
+<div class="card" style="padding:14px;margin-bottom:12px"><h2>Section 8 — Services Request</h2><div class="fields">${eventInput('s_officers','Number of Officers')}${eventArea('s_job','Details Job Desk')}</div><div id="units" class="fields"></div><div class="fields"><div><label>Road Block</label><select id="s_block"><option value="">Not specified</option><option>YES</option><option>NO</option></select></div><div><label>Road Closure</label><select id="s_close"><option value="">Not specified</option><option>YES</option><option>NO</option></select></div></div></div>
+<div class="card" style="padding:14px;margin-bottom:12px"><h2>Section 9 — Road Block Mapping</h2><div id="blockRows"></div><button class="btn secondary" onclick="addImage('block')">+ Add Image</button></div>
+<div class="card" style="padding:14px"><h2>Section 10 — Road Closure Mapping</h2><div id="closeRows"></div><button class="btn secondary" onclick="addImage('close')">+ Add Image</button></div>`;
+addHead();addMember();addRun();imageRows('mapHolder','map',''); // unused helper
+document.querySelector('#mapRows').innerHTML='';addImage('map');addImage('block');addImage('close');
+let u=['ADAM','ALPHA','MARY','HOTEL-1','HOTEL-2','TOM-1','TOM-2','AIR','SHARK'];$('units').innerHTML=u.map((x,i)=>`<div class="check"><input id="u${i}" type="checkbox"> ${x}</div>`).join('');
+}
+function addHead(){let r=$('headRows'),n=r.children.length,x=document.createElement('div');x.className='row row4';x.innerHTML=`<input id="h${n}a" placeholder="Full Name"><input id="h${n}b" placeholder="Phone Number"><input id="h${n}c" placeholder="Photocopy ID / Chatlog URL"><button class="btn remove" onclick="this.parentElement.remove()">×</button>`;r.appendChild(x)}
+function addMember(){let r=$('memberRows'),n=r.children.length,x=document.createElement('div');x.className='row row4';x.innerHTML=`<input id="m${n}a" placeholder="Full Name"><input id="m${n}b" placeholder="Position"><input id="m${n}c" placeholder="Phone Number"><input id="m${n}d" placeholder="Photocopy ID / Chatlog URL"><button class="btn remove" onclick="this.parentElement.remove()">×</button>`;r.appendChild(x)}
+function addRun(){let r=$('runRows'),n=r.children.length,x=document.createElement('div');x.className='row';x.innerHTML=`<input id="r${n}a" placeholder="HH:MM - HH:MM"><input id="r${n}b" placeholder="Activities"><button class="btn remove" onclick="this.parentElement.remove()">×</button>`;r.appendChild(x)}
+function rows(id,inputs){return [...$(id).children].map((x,i)=>inputs.map(s=>val(s+i)))}
+function validateImageUrl(url){
+  if(!url) return {ok:true};
+  try{
+    const u=new URL(url);
+    if(!/^https?:$/i.test(u.protocol)) return {ok:false,msg:"URL gambar harus menggunakan http:// atau https://"};
+    const ext=(u.pathname.split(".").pop()||"").toLowerCase();
+    const looksImage=/^(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(ext);
+    return {ok:true,looksImage};
+  }catch(e){return {ok:false,msg:"URL gambar tidak valid."}}
+}
+function checkImageInputs(prefix){
+  const inputs=[...$(prefix+"rows").querySelectorAll("input")];
+  for(const input of inputs){
+    const url=input.value.trim();
+    if(!url) continue;
+    const result=validateImageUrl(url);
+    if(!result.ok){ alert(result.msg+"\\n\\nGunakan URL gambar langsung dari Upload.ee."); input.focus(); return false; }
+    if(!result.looksImage){
+      const go=confirm("URL ini tidak terlihat seperti URL gambar langsung. Jika forum tidak dapat menampilkan gambar, upload gambarnya secara manual ke Upload.ee lalu tempel direct image URL-nya.\\n\\nTetap gunakan URL ini?");
+      if(!go){input.focus();return false;}
+    }
+  }
+  return true;
+}
+function validateAllEventImages(){
+  return ["map","block","close"].every(checkImageInputs);
+}
+function checkIdImages(){
+  const inputs=[...document.querySelectorAll("#headRows input,#memberRows input")].filter(x=>/Photocopy|Chatlog/i.test(x.placeholder));
+  for(const input of inputs){
+    const url=input.value.trim();
+    if(!url) continue;
+    const result=validateImageUrl(url);
+    if(!result.ok){ alert(result.msg+"\\n\\nUntuk photocopy ID, gunakan URL gambar langsung dari Upload.ee."); input.focus(); return false; }
+    if(!result.looksImage){
+      const go=confirm("URL photocopy ID/chatlog ini tidak terlihat seperti URL gambar langsung. Jika tidak tampil di forum, upload file/gambar ke Upload.ee dan gunakan direct image URL.\\n\\nTetap gunakan URL ini?");
+      if(!go){input.focus();return false;}
+    }
+  }
+  return true;
+}
+function generateEvent(){
+if(!validateAllEventImages() || !checkIdImages()) return;
+let esc=s=>s||'', heads=[...$('headRows').children].map((_,i)=>[val('h'+i+'a'),val('h'+i+'b'),val('h'+i+'c')]).filter(a=>a.some(Boolean)), members=[...$('memberRows').children].map((_,i)=>[val('m'+i+'a'),val('m'+i+'b'),val('m'+i+'c'),val('m'+i+'d')]).filter(a=>a.some(Boolean)), runs=[...$('runRows').children].map((_,i)=>[val('r'+i+'a'),val('r'+i+'b')]).filter(a=>a.some(Boolean));
+let imgs=(p)=>images(p).map(x=>`[spoiler][img]${x}[/img][/spoiler]`).join('\n');
+let units=['ADAM','ALPHA','MARY','HOTEL-1','HOTEL-2','TOM-1','TOM-2','AIR','SHARK'].map((x,i)=>val('u'+i)).filter(Boolean);
+let tableHead=heads.map(a=>`[tr][td]${a[0]}[td]${a[1]}[td]${a[2]}`).join('\n'),tableMem=members.map(a=>`[tr][td]${a[0]}[td]${a[1]}[td]${a[2]}[td]${a[3]}`).join('\n'),tableRun=runs.map(a=>`[tr][td]${a[0]}[td]${a[1]}`).join('\n');
+$('eventOut').textContent=`[divbox=white][align=center][img]https://i.postimg.cc/6p42YZxx/Media-relation-division.png[/img] 
+San Andreas Police Department 
+Media Relation Division (MRD) 
+[b]Event Registration Form[/b][/align] 
+[hr] 
+[align=justify]This Proposal has been requested to make in Officialy declared by the Officials, all the information below that has been answered will be saved permanently by the Office of the Administrative and will not be changed. I understand that I am obligated to be complete and truthful in providing information on this proposal. I, hereby understand and promise will obeying the valid procedures and rules of the Event Permit regulation. If I and another Committe violating, We ready to get a punishment either with the form of fines or jail.[/align] 
+[list=none]Applicant Signature: ${val('e_app')}[/list][/divbox] 
+[divbox=white][b]SECTION 1 - [/b]Information Details[hr][list=none] 
+Name: ${val('e_name')} 
+Date: ${val('e_date')} 
+Start Time: ${val('e_start')} 
+End Time: ${val('e_end')} 
+Classification: ${val('e_class')} 
+Type: ${val('e_type')} 
+Location: ${val('e_location')} 
+Location Type: ${val('e_ltype')} 
+Participants: ${val('e_part')} 
+Walkie Talkie Channel for Public: ${val('e_walk')} 
+[/list][/divbox] 
+[divbox=white][b]SECTION 2 - [/b]Purpose and Objectives[hr][align=justify][list=none]${val('e_purpose')}[/list][/align][/divbox] 
+[divbox=white][b]SECTION 3 - [/b]Company Informations[hr][list=none]Name: ${val('co_name')} 
+Address: ${val('co_address')} 
+E-mail: ${val('co_email')} 
+Fax or Phone Number: ${val('co_phone')}[/list][/divbox] 
+[divbox=white][b]SECTION 4 - [/b]Head of Committee Informations[hr][table=1,91][tr][td][b]Full Name[/b][td][b]Phone Number[/b][td][b]Photocopy of ID-card (( Chatlog ))[/b]
+${tableHead}
+[/table][/divbox] 
+[divbox=white][b]SECTION 5 - [/b]Member of Committee Informations[hr][table=1,91][tr][td][b]Full Name[/b][td][b]Position[/b][td][b]Phone Number[/b][td][b]Photocopy of ID-card (( Chatlog ))[/b]
+${tableMem}
+[/table][/divbox] 
+[divbox=white][b]SECTION 6 - [/b]Rundown Details[hr][table=1,91][tr][td][b]Time[/b][td][b]Activities[/b]
+${tableRun}
+[/table][b]Note: [/b]${val('e_note')}[/divbox] 
+[divbox=white][b]SECTION 7 - [/b]Location Mapping[hr][list=none]${imgs('map')}[/list][/divbox] 
+[divbox=white][b]SECTION 8 - [/b]Services Request (Optional)[hr]Number of Officers: ${val('s_officers')}
+Details Units (Following The Number of Officers): [list=none]${units.map(x=>`[ ] ${x}`).join('\n')}[/list] 
+Details Job Desk: [list=none]${val('s_job')}[/list] 
+Road Block: [list=none][ ] ${val('s_block')}[/list] 
+Road Closure: [list=none][ ] ${val('s_close')}[/list][/divbox] 
+[divbox=white][b]SECTION 9 - [/b]Road Block Mapping (Optional)[hr][list=none]${imgs('block')}[/list][/divbox] 
+[divbox=white][b]SECTION 10 - [/b]Road Closure Mapping (Optional)[hr][list=none]${imgs('close')}[/list][/divbox]`;
+}
+function copyOut(id){navigator.clipboard.writeText($(id).textContent);let b=event?.currentTarget;if(b){let t=b.textContent;b.textContent='Copied ✓';setTimeout(()=>b.textContent=t,1200)}}
+function resetPage(p){location.reload()}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));$(b.dataset.page).classList.remove('hidden');$('title').textContent=b.textContent.trim().replace('▣','').replace('▤','').replace('◈','');document.querySelector('.side').classList.remove('open')});
+renderEvent();
+</script>
+</body></html>
