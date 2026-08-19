@@ -1,2 +1,0 @@
-# bbcode
-BB CODE GENERATOR
